@@ -28,7 +28,7 @@ public class App {
 		if (args.length > 0) {
 			port(Integer.parseInt(args[0]));
 		} else {
-			port(8080);
+			port(getHerokuAssignedPort());
 		}
 
 		// objects for data stored in the service
@@ -95,7 +95,7 @@ public class App {
 
 		});
 
-		get("/accessdevice/code", (req, res) -> {
+		get("/accessdevice/code/", (req, res) -> {
 			return new Gson().toJson(accesscode);
 		});
 
@@ -103,7 +103,17 @@ public class App {
 			accesslog.clear();
 			return accesslog.toJson();
 		});
+
+
 		
     }
+
+	static int getHerokuAssignedPort() {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		if (processBuilder.environment().get("PORT") != null) {
+			return Integer.parseInt(processBuilder.environment().get("PORT"));
+		}
+		return 8080; //return default port if heroku-port isn't set (i.e. on localhost)
+	}
     
 }
